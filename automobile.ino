@@ -6,14 +6,14 @@
 
 TM1637 disp(CLK, DIO);
 
-int pinTouch = 8;
-int pinTouchRele = 4;
-int pinRide = 5;
+int pinTouch = 8;		// времено неиспользется
+int pinTouchRele = 4;	// исходящий сигнал включается после выбора режима таймера
+int pinRide = 5;		//не используется
 
-int keyPin=6;
-int keyPin1=7;
+int keyPin=6;			//переключение таймера  счетчиков 5-7-10 минут
+int keyPin1=7;			//сингнал с кнопки чтения счетчиков 5-7-10 минут
 int keyState;
-unsigned long keyTrashhold;
+unsigned long keyTrashhold; //
 
 unsigned long workTimer;
 
@@ -25,7 +25,7 @@ unsigned long displayUpdateTime;
 
 unsigned long rideTrashhold;
 
-byte rideN;
+byte rideN; // количество поездок
 int rideState;
 
 // Вычисляет время запуска события.
@@ -79,7 +79,6 @@ void loop()
  
   if(isTimeCome(timerDelay))
   {
-
     if(!isRun)
     {
       isRun=true;
@@ -114,6 +113,7 @@ void loop()
 
 }
 
+// Вывести время на дисплей
 void printTimer(unsigned long runTime)
 {
   int8_t TIME[4];
@@ -136,14 +136,15 @@ void printTimer(unsigned long runTime)
     TIME[2] = byte(sec / 10);            // получить десятки секунд
     TIME[3] = byte(sec % 10);            // получить единицы секунд
 
-    if(sec&1){disp.point(0);}
-    else{disp.point(1);}
+    if(sec&1){disp.point(0);}// Если секунда нечётная скрываем двоеточие
+    else{disp.point(1);}// Если чётная - показываем
     
     disp.display(TIME);
     displayUpdateTime=getTimeLine(500);
   }
 }
 
+//Показываем количество поездок
 void showRide()
 {
   if(digitalRead(pinRide)==LOW)
