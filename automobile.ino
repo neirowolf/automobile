@@ -181,7 +181,7 @@ void keyButton()
             case(420000):
             { workTimer=600000; }break;
 			case(600000):
-            { workTimer=0; }break;
+            { workTimer=666; }break;
             default:{workTimer=666;}
           }
           printTimer(workTimer);
