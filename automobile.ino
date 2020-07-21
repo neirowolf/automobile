@@ -77,7 +77,7 @@ Serial.begin(9600);
 void loop()
 {
  
-  if(isTimeCome(timerDelay))
+  if($workTimer!=666&&isTimeCome(timerDelay))
   {
     if(!isRun)
     {
@@ -147,7 +147,7 @@ void printTimer(unsigned long runTime)
 //Показываем количество поездок
 void showRide()
 {
-  if(digitalRead(pinRide)==LOW)
+  if($workTimer==666)
   {
        disp.displayIntZero(rideN);
   }
@@ -174,13 +174,15 @@ void keyButton()
        {
           switch(workTimer)
           {
-            case(300000):
+            case(666):
+            { workTimer=300000; }break;
+			case(300000):
             { workTimer=420000; }break;
             case(420000):
             { workTimer=600000; }break;
 			case(600000):
             { workTimer=0; }break;
-            default:{workTimer=300000;}
+            default:{workTimer=666;}
           }
           printTimer(workTimer);
           keyTrashhold=getTrashhold();
