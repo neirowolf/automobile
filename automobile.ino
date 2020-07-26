@@ -4,6 +4,11 @@
 #define CLK 3
 #define DIO 2
 
+#define RTIME_05 300000 // Время поездки 5 минут
+#define RTIME_07 420000 // Время поездки 7 минут
+#define RTIME_10 600000 // Время поездки 10 минут
+
+
 TM1637 disp(CLK, DIO);
 
 int pinTouch = 8;		// времено неиспользется
@@ -13,7 +18,7 @@ int pinRide = 5;		//не используется
 int keyPin=6;			//переключение таймера  счетчиков 5-7-10 минут
 int keyPin1=7;			//сингнал с кнопки чтения счетчиков 5-7-10 минут
 int keyState;
-unsigned long keyTrashhold; //
+unsigned long keyTrashhold; 
 
 unsigned long workTimer;
 
@@ -25,7 +30,11 @@ unsigned long displayUpdateTime;
 
 unsigned long rideTrashhold;
 
-byte rideN; // количество поездок
+byte rideN_5; // количество поездок 5 минут
+byte rideN_7; // количество поездок 7 минут
+byte rideN_10; // количество поездок 10 минут
+byte k; //Выводимый счётчик
+
 int rideState;
 
 // Вычисляет время запуска события.
@@ -69,8 +78,10 @@ Serial.begin(9600);
  disp.set(7);
 
 
- rideN=EEPROM.read(0);
- if(rideN==255){rideN=0;EEPROM.update(0, rideN);}
+ rideN_5=EEPROM.read(0);
+ rideN_7=EEPROM.read(1);
+ rideN_10=EEPROM.read(2);
+// if(rideN==255){rideN=0;EEPROM.update(0, rideN);}
  
 }
 
@@ -81,10 +92,7 @@ void loop()
     if(!isRun)
     {
       isRun=true;
-      runTime=getTimeLine(workTimer);
-		
-      rideN++;
-      EEPROM.update(0, rideN);
+      runTime=getTimeLine(workTimer);		
     }
   }
   else
@@ -98,10 +106,14 @@ void loop()
   {
     if(isTimeCome(runTime))
     {
+	  saveRide();
+		
       isRun=false;
       timerDelay=0;
       workTimer=0;
       runTime=0;
+		
+		
     }
     else
     {
@@ -109,6 +121,29 @@ void loop()
        printTimer(runTime-millis());
     }
   }
+}
+
+void saveRide()
+{
+ switch(workTimer)
+ {
+	case(RTIME_05):{rideN_5=updateRideLine(rideN_05,0)}break;
+	case(RTIME_07):{rideN_5=updateRideLine(rideN_07,1)}break;
+	case(RTIME_10):{rideN_5=updateRideLine(rideN_10,2)}break;
+ }
+ if(rideN==255){rideN=0;}
+ rideN++;
+ 
+ EEPROM.update(0, rideN);
+ return rideN;
+}
+
+void updateRideLine(byte ride, int n)
+{
+ if(ride==255){ride=0;}
+ ride++;
+ 
+ EEPROM.update(n, ride);
 }
 
 // Вывести время на дисплей
@@ -145,16 +180,53 @@ void printTimer(unsigned long runTime)
 //Показываем количество поездок
 void showRide()
 {
-  if(digitalRead(keyPin1)==HIGH)
+  if(digitalRead(keyPin1)==LOW)
   {
-       disp.displayIntZero(rideN);
+	  swithc(k):
+	  {
+		  case(0){printRide(k,rideN_05);}break;
+		  case(1){printRide(k,rideN_07);}break;
+		  case(2){printRide(k,rideN_10);}break;
+	  }
   }
+}
+
+// Выводим на экран количество поезок
+void printRide(byte t,byte ride)
+{
+  int8_t TIME[4];
+
+  
+  
+    rest=runTime/1000;
+  
+    mins=rest/60;
+    sec=rest%60;
+  
+    TIME[0] = t;			// индекс счётчика
+    TIME[1] = ride/100;     // получить сотни
+    TIME[2] = (ride/10)%10; // получить десятки
+    TIME[3] = ride%10;      // получить единицы
+    disp.point(0);
+    
+    disp.display(TIME);
 }
 
 void keyButton()
 {
+  if(isTimeCome(rideTrashhold))
+  {
+    if(digitalRead(keyPin1)==HIGH)
+	{
+		k++;
+		if(k>2){k=0;}
+		rideTrashhold=getTrashhold();
+	}
+  }
+	
   if(isTimeCome(keyTrashhold))
   {
+    
     switch(keyState)
     {
       case(0):
@@ -171,13 +243,13 @@ void keyButton()
        {
           switch(workTimer)
           {
-            case(300000):
-            { workTimer=420000; }break;
-            case(420000):
-            { workTimer=600000; }break;
-			case(600000):
+            case(RTIME_05):
+            { workTimer=RTIME_07; }break;
+            case(RTIME_07):
+            { workTimer=RTIME_10; }break;
+			case(RTIME_10):
             { workTimer=0; }break;
-            default:{workTimer=300000;}
+            default:{workTimer=RTIME_05;}
           }
           printTimer(workTimer);
           keyTrashhold=getTrashhold();
