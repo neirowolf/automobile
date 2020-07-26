@@ -178,7 +178,7 @@ void showRide()
 {
   if(digitalRead(keyPin1)==LOW)
   {
-	  switch(k):
+	  switch(k)
 	  {
 		  case(0){printRide(k,rideN_05);}break;
 		  case(1){printRide(k,rideN_07);}break;
