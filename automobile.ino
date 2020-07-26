@@ -92,7 +92,8 @@ void loop()
     if(!isRun)
     {
       isRun=true;
-      runTime=getTimeLine(workTimer);		
+      runTime=getTimeLine(workTimer);	
+	   saveRide();
     }
   }
   else
@@ -106,8 +107,6 @@ void loop()
   {
     if(isTimeCome(runTime))
     {
-	  saveRide();
-		
       isRun=false;
       timerDelay=0;
       workTimer=0;
@@ -191,8 +190,14 @@ void showRide()
 void printRide(byte t,byte ride)
 {
   int8_t TIME[4];
-
-    TIME[0] = t;			// индекс счётчика
+	
+	switch(t)// индекс счётчика
+	{
+		case(0):{TIME[0] = 5;}break;
+		case(0):{TIME[0] = 7;}break;
+		case(0):{TIME[0] = 1;}break;
+	}
+    			
     TIME[1] = ride/100;     // получить сотни
     TIME[2] = (ride/10)%10; // получить десятки
     TIME[3] = ride%10;      // получить единицы
