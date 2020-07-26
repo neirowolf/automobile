@@ -194,8 +194,8 @@ void printRide(byte t,byte ride)
 	switch(t)// индекс счётчика
 	{
 		case(0):{TIME[0] = 5;}break;
-		case(0):{TIME[0] = 7;}break;
-		case(0):{TIME[0] = 1;}break;
+		case(1):{TIME[0] = 7;}break;
+		case(2):{TIME[0] = 1;}break;
 	}
     			
     TIME[1] = ride/100;     // получить сотни
