@@ -180,9 +180,9 @@ void showRide()
   {
 	  switch(k)
 	  {
-		  case(0){printRide(k,rideN_05);}break;
-		  case(1){printRide(k,rideN_07);}break;
-		  case(2){printRide(k,rideN_10);}break;
+		  case(0):{printRide(k,rideN_05);}break;
+		  case(1):{printRide(k,rideN_07);}break;
+		  case(2):{printRide(k,rideN_10);}break;
 	  }
   }
 }
