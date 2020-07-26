@@ -53,7 +53,7 @@ Serial.begin(9600);
   pinMode(pinTouch, INPUT_PULLUP);
   pinMode(pinRide, INPUT_PULLUP);
   pinMode(keyPin, INPUT_PULLUP);
-  pinMode(keyPin1, OUTPUT);
+  pinMode(keyPin1, INPUT_PULLUP);
   pinMode(pinTouchRele, OUTPUT);
 
 
@@ -76,7 +76,6 @@ Serial.begin(9600);
 
 void loop()
 {
- 
   if(isTimeCome(timerDelay))
   {
     if(!isRun)
@@ -110,7 +109,6 @@ void loop()
        printTimer(runTime-millis());
     }
   }
-
 }
 
 // Вывести время на дисплей
@@ -147,7 +145,7 @@ void printTimer(unsigned long runTime)
 //Показываем количество поездок
 void showRide()
 {
-  if(digitalRead(keyPin1)==LOW)
+  if(digitalRead(keyPin1)==HIGH)
   {
        disp.displayIntZero(rideN);
   }
@@ -155,7 +153,6 @@ void showRide()
 
 void keyButton()
 {
-  digitalWrite(keyPin1,LOW);
   if(isTimeCome(keyTrashhold))
   {
     switch(keyState)
