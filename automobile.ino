@@ -30,8 +30,8 @@ unsigned long displayUpdateTime;
 
 unsigned long rideTrashhold;
 
-byte rideN_5; // количество поездок 5 минут
-byte rideN_7; // количество поездок 7 минут
+byte rideN_05; // количество поездок 5 минут
+byte rideN_07; // количество поездок 7 минут
 byte rideN_10; // количество поездок 10 минут
 byte k; //Выводимый счётчик
 
@@ -78,8 +78,8 @@ Serial.begin(9600);
  disp.set(7);
 
 
- rideN_5=EEPROM.read(0);
- rideN_7=EEPROM.read(1);
+ rideN_05=EEPROM.read(0);
+ rideN_07=EEPROM.read(1);
  rideN_10=EEPROM.read(2);
 // if(rideN==255){rideN=0;EEPROM.update(0, rideN);}
  
@@ -127,23 +127,19 @@ void saveRide()
 {
  switch(workTimer)
  {
-	case(RTIME_05):{rideN_5=updateRideLine(rideN_05,0)}break;
-	case(RTIME_07):{rideN_5=updateRideLine(rideN_07,1)}break;
-	case(RTIME_10):{rideN_5=updateRideLine(rideN_10,2)}break;
+	case(RTIME_05):{rideN_05=updateRideLine(rideN_05,0)}break;
+	case(RTIME_07):{rideN_07=updateRideLine(rideN_07,1)}break;
+	case(RTIME_10):{rideN_10=updateRideLine(rideN_10,2)}break;
  }
- if(rideN==255){rideN=0;}
- rideN++;
- 
- EEPROM.update(0, rideN);
- return rideN;
 }
 
-void updateRideLine(byte ride, int n)
+byte updateRideLine(byte ride, int n)
 {
  if(ride==255){ride=0;}
  ride++;
  
  EEPROM.update(n, ride);
+ return ride;
 }
 
 // Вывести время на дисплей
