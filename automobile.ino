@@ -127,9 +127,9 @@ void saveRide()
 {
  switch(workTimer)
  {
-	case(RTIME_05):{rideN_05=updateRideLine(rideN_05,0)}break;
-	case(RTIME_07):{rideN_07=updateRideLine(rideN_07,1)}break;
-	case(RTIME_10):{rideN_10=updateRideLine(rideN_10,2)}break;
+	case(RTIME_05):{rideN_05=updateRideLine(rideN_05,0);}break;
+	case(RTIME_07):{rideN_07=updateRideLine(rideN_07,1);}break;
+	case(RTIME_10):{rideN_10=updateRideLine(rideN_10,2);}break;
  }
 }
 
@@ -178,7 +178,7 @@ void showRide()
 {
   if(digitalRead(keyPin1)==LOW)
   {
-	  swithc(k):
+	  switch(k):
 	  {
 		  case(0){printRide(k,rideN_05);}break;
 		  case(1){printRide(k,rideN_07);}break;
@@ -192,13 +192,6 @@ void printRide(byte t,byte ride)
 {
   int8_t TIME[4];
 
-  
-  
-    rest=runTime/1000;
-  
-    mins=rest/60;
-    sec=rest%60;
-  
     TIME[0] = t;			// индекс счётчика
     TIME[1] = ride/100;     // получить сотни
     TIME[2] = (ride/10)%10; // получить десятки
