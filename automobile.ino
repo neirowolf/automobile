@@ -29,6 +29,8 @@ unsigned long runTime;
 unsigned long displayUpdateTime;
 
 unsigned long rideTrashhold;
+unsigned long startPressing; //Начало нажатия кнопки
+unsigned long endPressing; //Конец нажатия кнопки
 
 byte rideN_05; // количество поездок 5 минут
 byte rideN_07; // количество поездок 7 минут
@@ -227,6 +229,11 @@ void keyButton()
       {
         if(digitalRead(keyPin)==HIGH)
         {
+		 if(!startPressing)
+		 {
+			 startPressing=millis();
+			 endPressing=millis();
+		 }
          keyTrashhold=getTrashhold();
          keyState=1;
         }
@@ -235,22 +242,36 @@ void keyButton()
       {
        if(digitalRead(keyPin)==LOW)
        {
-          switch(workTimer)
-          {
-            case(RTIME_05):
-            { workTimer=RTIME_07; }break;
-            case(RTIME_07):
-            { workTimer=RTIME_10; }break;
-			case(RTIME_10):
-            { workTimer=0; }break;
-            default:{workTimer=RTIME_05;}
-          }
-          printTimer(workTimer);
-          keyTrashhold=getTrashhold();
-          keyState=0;
-          rideState=0;
-          
-          timerDelay=getTimeLine(3000);
+		    endPressing=millis();
+		    if(endPressing-startPressing>3000)
+		    {
+				workTimer=10000;
+				  printTimer(workTimer);
+				  keyTrashhold=getTrashhold();
+				  keyState=0;
+				  rideState=0;
+				  
+				  timerDelay=getTimeLine(3000);
+			}
+			else
+			{
+			  switch(workTimer)
+			  {
+				case(RTIME_05):
+				{ workTimer=RTIME_07; }break;
+				case(RTIME_07):
+				{ workTimer=RTIME_10; }break;
+				case(RTIME_10):
+				{ workTimer=0; }break;
+				default:{workTimer=RTIME_05;}
+			  }
+			  printTimer(workTimer);
+			  keyTrashhold=getTrashhold();
+			  keyState=0;
+			  rideState=0;
+			  
+			  timerDelay=getTimeLine(3000);
+	        }
        }
       }break;
     }
