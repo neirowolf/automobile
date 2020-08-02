@@ -15,8 +15,8 @@ int pinTouch = 8;		// времено неиспользется
 int pinTouchRele = 4;	// исходящий сигнал включается после выбора режима таймера
 int pinRide = 5;		//не используется
 
-int keyPin=6;			//переключение таймера  счетчиков 5-7-10 минут
-int keyPin1=7;			//сингнал с кнопки чтения счетчиков 5-7-10 минут
+int keyPin=7;			//переключение таймера  счетчиков 5-7-10 минут
+int keyPin1=6;			//сингнал с кнопки чтения счетчиков 5-7-10 минут
 int keyState;
 unsigned long keyTrashhold; 
 
@@ -84,6 +84,8 @@ Serial.begin(9600);
  rideN_07=EEPROM.read(1);
  rideN_10=EEPROM.read(2);
 // if(rideN==255){rideN=0;EEPROM.update(0, rideN);}
+
+ startPressing=endPressing=0;
  
 }
 
@@ -95,7 +97,7 @@ void loop()
     {
       isRun=true;
       runTime=getTimeLine(workTimer);	
-	   saveRide();
+	  saveRide();
     }
   }
   else
@@ -218,7 +220,7 @@ void keyButton()
 		if(k>2){k=0;}
 		rideTrashhold=getTrashhold();
 		
-		 if(!startPressing)
+		 if(startPressing==0)
 		 {
 			 startPressing=millis();
 			 endPressing=millis();
@@ -227,7 +229,7 @@ void keyButton()
 	else
 	{
 		endPressing=millis();
-	    if(endPressing-startPressing>3000)
+	    if(startPressing!=0&&(endPressing-startPressing)>3000)
 		{
 			workTimer=10000;
 			printTimer(workTimer);
@@ -235,9 +237,9 @@ void keyButton()
 			keyState=0;
 			rideState=0;
 				  
-			timerDelay=getTimeLine(3000);
+			timerDelay=getTimeLine(10);
 		}
-		startPressing=0;
+		startPressing=endPressing=0;
 	}
   }
 	
