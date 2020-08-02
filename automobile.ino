@@ -217,6 +217,27 @@ void keyButton()
 		k++;
 		if(k>2){k=0;}
 		rideTrashhold=getTrashhold();
+		
+		 if(!startPressing)
+		 {
+			 startPressing=millis();
+			 endPressing=millis();
+		 }
+	}
+	else
+	{
+		endPressing=millis();
+	    if(endPressing-startPressing>3000)
+		{
+			workTimer=10000;
+			printTimer(workTimer);
+			keyTrashhold=getTrashhold();
+			keyState=0;
+			rideState=0;
+				  
+			timerDelay=getTimeLine(3000);
+		}
+		startPressing=0;
 	}
   }
 	
@@ -229,11 +250,6 @@ void keyButton()
       {
         if(digitalRead(keyPin)==HIGH)
         {
-		 if(!startPressing)
-		 {
-			 startPressing=millis();
-			 endPressing=millis();
-		 }
          keyTrashhold=getTrashhold();
          keyState=1;
         }
@@ -242,19 +258,6 @@ void keyButton()
       {
        if(digitalRead(keyPin)==LOW)
        {
-		    endPressing=millis();
-		    if(endPressing-startPressing>3000)
-		    {
-				workTimer=10000;
-				  printTimer(workTimer);
-				  keyTrashhold=getTrashhold();
-				  keyState=0;
-				  rideState=0;
-				  
-				  timerDelay=getTimeLine(3000);
-			}
-			else
-			{
 			  switch(workTimer)
 			  {
 				case(RTIME_05):
@@ -271,7 +274,6 @@ void keyButton()
 			  rideState=0;
 			  
 			  timerDelay=getTimeLine(3000);
-	        }
        }
       }break;
     }
