@@ -1,5 +1,7 @@
 #include <EEPROM.h>
 
+#include "GyverButton.h"
+
 #include <TM1637.h>
 #define CLK 3
 #define DIO 2
@@ -16,7 +18,9 @@ int pinTouchRele = 4;	// исходящий сигнал включается п
 int pinRide = 5;		//не используется
 
 int keyPin=7;			//переключение таймера  счетчиков 5-7-10 минут
+GButton keyBTN(keyPin);
 int keyPin1=6;			//сингнал с кнопки чтения счетчиков 5-7-10 минут
+GButton screenBTN(keyPin1);
 int keyState;
 unsigned long keyTrashhold; 
 
@@ -60,12 +64,22 @@ boolean isTimeCome(unsigned long mark)
 }
 
 void setup() {
-Serial.begin(9600);
+  Serial.begin(9600);
   pinMode(pinTouch, INPUT_PULLUP);
   pinMode(pinRide, INPUT_PULLUP);
   pinMode(keyPin, INPUT_PULLUP);
   pinMode(keyPin1, INPUT_PULLUP);
   pinMode(pinTouchRele, OUTPUT);
+  
+  
+  
+  //Устанавливаем режим кнопок
+  keyBTN.setType(HIGH_PULL);
+  keyBTN.setDirection(NORM_OPEN);
+  screenBTN.setType(HIGH_PULL);
+  screenBTN.setDirection(NORM_OPEN);
+  
+  //////////////////////////////
 
 
  keyTrashhold=1;
@@ -91,21 +105,24 @@ Serial.begin(9600);
 
 void loop()
 {
-  if(isTimeCome(timerDelay))
-  {
-    if(!isRun)
-    {
-      isRun=true;
-      runTime=getTimeLine(workTimer);	
-	  saveRide();
-    }
-  }
-  else
-  {
-   digitalWrite(pinTouchRele, digitalRead(pinTouch));
-   keyButton();
-   showRide();
-  }
+	keyBTN.tick();
+	screenBTN.tick();
+	
+	if(isTimeCome(timerDelay))//Если прошла задержка перед стартом
+	{
+		if(!isRun)//Если ещё не едем, 
+		{
+		  isRun=true;//запускаем поездку
+		  runTime=getTimeLine(workTimer);// Устанавливаем время поездки
+		  saveRide();// и увеличиваем счётчик поездок
+		}
+	}
+	else
+	{
+		digitalWrite(pinTouchRele, digitalRead(pinTouch));
+		keyButton();
+		showRide();
+	}
   
   if(isRun)
   {
@@ -115,8 +132,6 @@ void loop()
       timerDelay=0;
       workTimer=0;
       runTime=0;
-		
-		
     }
     else
     {
@@ -212,40 +227,25 @@ void printRide(byte t,byte ride)
 
 void keyButton()
 {
-  if(isTimeCome(rideTrashhold))
+  if(screenBTN.isHold()&&screenBTN.getHoldClicks()>3000)
   {
-    if(digitalRead(keyPin1)==HIGH)
-	{
+	workTimer=10000;
+	printTimer(workTimer);
+	keyTrashhold=getTrashhold();
+	keyState=0;
+	rideState=0;
+				  
+	timerDelay=getTimeLine(10);
+  }
+  
+  if(screenBTN.click())
+  {
 		k++;
 		if(k>2){k=0;}
-		rideTrashhold=getTrashhold();
-		
-		 if(startPressing==0)
-		 {
-			 startPressing=millis();
-			 endPressing=millis();
-		 }
-	}
-	else
-	{
-		endPressing=millis();
-	    if(startPressing!=0&&(endPressing-startPressing)>3000)
-		{
-			workTimer=10000;
-			printTimer(workTimer);
-			keyTrashhold=getTrashhold();
-			keyState=0;
-			rideState=0;
-				  
-			timerDelay=getTimeLine(10);
-		}
-		startPressing=endPressing=0;
-	}
   }
 	
-  if(isTimeCome(keyTrashhold))
+  if(keyBTN.click())
   {
-    
     switch(keyState)
     {
       case(0):
