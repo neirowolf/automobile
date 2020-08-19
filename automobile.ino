@@ -112,9 +112,9 @@ void loop()
 	{
 		if(!isRun)//Если ещё не едем, 
 		{
-		  isRun=true;//запускаем поездку
-		  runTime=getTimeLine(workTimer);// Устанавливаем время поездки
-		  saveRide();// и увеличиваем счётчик поездок
+			isRun=true;//запускаем поездку
+			runTime=getTimeLine(workTimer);// Устанавливаем время поездки
+			saveRide();// и увеличиваем счётчик поездок
 		}
 	}
 	else
@@ -124,21 +124,21 @@ void loop()
 		showRide();
 	}
   
-  if(isRun)
-  {
-    if(isTimeCome(runTime))
-    {
-      isRun=false;
-      timerDelay=0;
-      workTimer=0;
-      runTime=0;
-    }
-    else
-    {
-       digitalWrite(pinTouchRele, LOW);
-       printTimer(runTime-millis());
-    }
-  }
+	if(isRun)
+	{
+		if(isTimeCome(runTime))
+		{
+			isRun=false;
+			timerDelay=0;
+			workTimer=0;
+			runTime=0;
+		}
+		else
+		{
+			digitalWrite(pinTouchRele, LOW);
+			printTimer(runTime-millis());
+		}
+	}
 }
 
 void saveRide()
@@ -238,13 +238,13 @@ void keyButton()
 	timerDelay=getTimeLine(10);
   }
   
-  if(screenBTN.click())
+  if(screenBTN.isClick())
   {
 		k++;
 		if(k>2){k=0;}
   }
 	
-  if(keyBTN.click())
+  if(keyBTN.isClick())
   {
     switch(keyState)
     {
