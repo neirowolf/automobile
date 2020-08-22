@@ -248,16 +248,6 @@ void keyButton()
   {
     switch(keyState)
     {
-      case(0):
-      {
-        if(digitalRead(keyPin)==HIGH)
-        {
-         keyTrashhold=getTrashhold();
-         keyState=1;
-        }
-      }break;
-      case(1):
-      {
        if(digitalRead(keyPin)==LOW)
        {
 			  switch(workTimer)
@@ -277,7 +267,6 @@ void keyButton()
 			  
 			  timerDelay=getTimeLine(3000);
        }
-      }break;
     }
   }
 }
