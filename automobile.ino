@@ -10,6 +10,9 @@
 #define RTIME_07 420000 // Время поездки 7 минут
 #define RTIME_10 600000 // Время поездки 10 минут
 
+#define TIMER_PIN 7 //переключение таймера  счетчиков 5-7-10 минут
+#define SCREEN_PIN 6 //сингнал с кнопки чтения счетчиков 5-7-10 минут
+
 
 TM1637 disp(CLK, DIO);
 
@@ -18,10 +21,9 @@ int pinTouchRele = 4;	// исходящий сигнал включается п
 int pinRide = 5;		//не используется
 
 int keyPin=7;			//переключение таймера  счетчиков 5-7-10 минут
-GButton keyBTN(keyPin);
+GButton keyBTN(TIMER_PIN);
 int keyPin1=6;			//сингнал с кнопки чтения счетчиков 5-7-10 минут
-GButton screenBTN(keyPin1);
-int keyState;
+GButton screenBTN(SCREEN_PIN);
 unsigned long keyTrashhold; 
 
 unsigned long workTimer;
@@ -41,7 +43,8 @@ byte rideN_07; // количество поездок 7 минут
 byte rideN_10; // количество поездок 10 минут
 byte k; //Выводимый счётчик
 
-int rideState;
+bool isShowRide=true;//Показывать счётчик поездок
+
 
 // Вычисляет время запуска события.
 // Получает время, через которое наступит событие (в милисекундах)
@@ -67,8 +70,8 @@ void setup() {
   Serial.begin(9600);
   pinMode(pinTouch, INPUT_PULLUP);
   pinMode(pinRide, INPUT_PULLUP);
-  pinMode(keyPin, INPUT_PULLUP);
-  pinMode(keyPin1, INPUT_PULLUP);
+ // pinMode(keyPin, INPUT_PULLUP);
+ // pinMode(keyPin1, INPUT_PULLUP);
   pinMode(pinTouchRele, OUTPUT);
   
   
@@ -85,7 +88,6 @@ void setup() {
  keyTrashhold=1;
  rideTrashhold=1;
  
- keyState=0;
  workTimer=0;
  isRun=false;
  timerDelay=0;
@@ -194,7 +196,8 @@ void printTimer(unsigned long runTime)
 //Показываем количество поездок
 void showRide()
 {
-  if(digitalRead(keyPin1)==LOW)
+  //if(digitalRead(keyPin1)==LOW)
+  if(isShowRide)
   {
 	  switch(k)
 	  {
@@ -232,42 +235,34 @@ void keyButton()
 	workTimer=10000;
 	printTimer(workTimer);
 	keyTrashhold=getTrashhold();
-	keyState=0;
-	rideState=0;
 				  
 	timerDelay=getTimeLine(10);
   }
   
   if(screenBTN.isClick())
   {
+	  isShowRide=true;
 		k++;
 		if(k>2){k=0;}
   }
 	
   if(keyBTN.isClick())
   {
-    switch(keyState)
-    {
-       if(digitalRead(keyPin)==LOW)
-       {
-			  switch(workTimer)
-			  {
-				case(RTIME_05):
-				{ workTimer=RTIME_07; }break;
-				case(RTIME_07):
-				{ workTimer=RTIME_10; }break;
-				case(RTIME_10):
-				{ workTimer=0; }break;
-				default:{workTimer=RTIME_05;}
-			  }
-			  printTimer(workTimer);
-			  keyTrashhold=getTrashhold();
-			  keyState=0;
-			  rideState=0;
-			  
-			  timerDelay=getTimeLine(3000);
-       }
-    }
+	  switch(workTimer)
+	  {
+		  case(RTIME_05):
+		  { workTimer=RTIME_07; }break;
+		  case(RTIME_07):
+		  { workTimer=RTIME_10; }break;
+		  case(RTIME_10):
+		  { workTimer=0; }break;
+		  default:{workTimer=RTIME_05;}
+		  }
+		  isShowRide=false;
+		  printTimer(workTimer);
+		  keyTrashhold=getTrashhold();
+		  
+		  timerDelay=getTimeLine(3000);
   }
 }
 
