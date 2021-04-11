@@ -1,10 +1,18 @@
 #include <EEPROM.h>
 
+
 #include "GyverButton.h"
 
 #include <TM1637.h>
 #define CLK 3
 #define DIO 2
+
+#include <SoftwareSerial.h>
+#define SIM_RX 8
+#define SIM_TX 9
+
+SoftwareSerial SIM800(SIM_RX, SIM_TX);
+
 
 #define RTIME_05 300000 // Время поездки 5 минут
 #define RTIME_07 420000 // Время поездки 7 минут
@@ -67,6 +75,7 @@ boolean isTimeCome(unsigned long mark)
 }
 
 void setup() {
+  SIM800.begin(9600);
   Serial.begin(9600);
   pinMode(pinTouch, INPUT_PULLUP);
   pinMode(pinRide, INPUT_PULLUP);
@@ -143,6 +152,48 @@ void loop()
 	}
 }
 
+void SIMCommand(String s)
+{
+	SIM800.print(s);
+	SIM800.print(13);
+}
+
+// Отправляем данные через SIM
+void sendSIMData()
+{
+	byte msg[4];
+	msg[0]=rideN_05;
+	msg[1]=rideN_07;
+	msg[2]=rideN_10;
+	msg[2]=0x1A;
+	
+	SIMCommand('AT+CPIN?');
+	SIMCommand('AT+CSQ');
+	SIMCommand('AT+CREG?');
+	SIMCommand('AT+CGATT?');
+	SIMCommand('AT+CIPMODE=0');
+	SIMCommand('AT+CIPMUX=0');
+	
+	SIMCommand('AT+CSTT="internet"');
+	SIMCommand('AT+CIPSTATUS');
+	SIMCommand('AT+CIICR');
+	SIMCommand('AT+CIPSTATUS');
+	SIMCommand('AT+CIFSR');
+	SIMCommand('AT+CIPSTATUS');
+	SIMCommand('AT+CIPSTART="TCP","127.0.0.1",80');
+	SIMCommand('AT+CIPSTATUS');
+	
+	SIMCommand('AT+CIPSEND?');
+	SIMCommand('AT+CIPQSEND?');
+	SIMCommand('AT+CIPSEND=4');
+	
+	SIMCommand(msg);
+	
+	SIMCommand('AT+CIPCLOSE');
+	
+	
+}
+
 void saveRide()
 {
  switch(workTimer)
@@ -151,7 +202,10 @@ void saveRide()
 	case(RTIME_07):{rideN_07=updateRideLine(rideN_07,1);}break;
 	case(RTIME_10):{rideN_10=updateRideLine(rideN_10,2);}break;
  }
+ sendSIMData();
 }
+
+
 
 byte updateRideLine(byte ride, int n)
 {
