@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 
 
-#include "GyverButton.h"
+//#include "GyverButton.h"
 
 #include <TM1637.h>
 #define CLK 3
@@ -167,25 +167,25 @@ void sendSIMData()
 	msg[2]=rideN_10;
 	msg[2]=0x1A;
 	
-	SIMCommand('AT+CPIN?');
-	SIMCommand('AT+CSQ');
-	SIMCommand('AT+CREG?');
-	SIMCommand('AT+CGATT?');
-	SIMCommand('AT+CIPMODE=0');
-	SIMCommand('AT+CIPMUX=0');
+	SIMCommand("AT+CPIN?");
+	SIMCommand("AT+CSQ");
+	SIMCommand("AT+CREG?");
+	SIMCommand("AT+CGATT?");
+	SIMCommand("AT+CIPMODE=0");
+	SIMCommand("AT+CIPMUX=0");
 	
-	SIMCommand('AT+CSTT="internet"');
-	SIMCommand('AT+CIPSTATUS');
-	SIMCommand('AT+CIICR');
-	SIMCommand('AT+CIPSTATUS');
-	SIMCommand('AT+CIFSR');
-	SIMCommand('AT+CIPSTATUS');
-	SIMCommand('AT+CIPSTART="TCP","127.0.0.1",80');
-	SIMCommand('AT+CIPSTATUS');
+	SIMCommand("AT+CSTT=\"internet\"");
+	SIMCommand("AT+CIPSTATUS");
+	SIMCommand("AT+CIICR");
+	SIMCommand("AT+CIPSTATUS");
+	SIMCommand("AT+CIFSR");
+	SIMCommand("AT+CIPSTATUS");
+	SIMCommand("AT+CIPSTART=\"TCP\",\"127.0.0.1\",80");
+	SIMCommand("AT+CIPSTATUS');
 	
-	SIMCommand('AT+CIPSEND?');
-	SIMCommand('AT+CIPQSEND?');
-	SIMCommand('AT+CIPSEND=4');
+	SIMCommand("AT+CIPSEND?");
+	SIMCommand("AT+CIPQSEND?")
+	SIMCommand("AT+CIPSEND=4");
 	
 	SIMCommand(msg);
 	
@@ -319,4 +319,3 @@ void keyButton()
 		  timerDelay=getTimeLine(3000);
   }
 }
-
