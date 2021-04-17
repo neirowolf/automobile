@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 
 
-//#include "GyverButton.h"
+#include "GyverButton.h"
 
 #include <TM1637.h>
 #define CLK 3
@@ -181,7 +181,7 @@ void sendSIMData()
 	SIMCommand("AT+CIFSR");
 	SIMCommand("AT+CIPSTATUS");
 	SIMCommand("AT+CIPSTART=\"TCP\",\"127.0.0.1\",80");
-	SIMCommand("AT+CIPSTATUS');
+	SIMCommand("AT+CIPSTATUS");
 	
 	SIMCommand("AT+CIPSEND?");
 	SIMCommand("AT+CIPQSEND?")
@@ -189,7 +189,7 @@ void sendSIMData()
 	
 	SIMCommand(msg);
 	
-	SIMCommand('AT+CIPCLOSE');
+	SIMCommand("AT+CIPCLOSE");
 	
 	
 }
