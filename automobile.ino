@@ -184,7 +184,7 @@ void sendSIMData()
 	SIMCommand("AT+CIPSTATUS");
 	
 	SIMCommand("AT+CIPSEND?");
-	SIMCommand("AT+CIPQSEND?")
+	SIMCommand("AT+CIPQSEND?");
 	SIMCommand("AT+CIPSEND=4");
 	
 	SIMCommand(msg);
