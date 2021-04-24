@@ -4,12 +4,12 @@
 #include "GyverButton.h"
 
 #include <TM1637.h>
-#define CLK 3
-#define DIO 2
+#define CLK A4
+#define DIO A5
 
 #include <SoftwareSerial.h>
-#define SIM_RX 8
-#define SIM_TX 9
+#define SIM_RX D4
+#define SIM_TX D5
 
 SoftwareSerial SIM800(SIM_RX, SIM_TX);
 
@@ -28,9 +28,9 @@ int pinTouch = 8;		// времено неиспользется
 int pinTouchRele = 4;	// исходящий сигнал включается после выбора режима таймера
 int pinRide = 5;		//не используется
 
-int keyPin=7;			//переключение таймера  счетчиков 5-7-10 минут
+int keyPin=A1;			//переключение таймера  счетчиков 5-7-10 минут
 GButton keyBTN(TIMER_PIN);
-int keyPin1=6;			//сингнал с кнопки чтения счетчиков 5-7-10 минут
+int keyPin1=A1;			//сингнал с кнопки чтения счетчиков 5-7-10 минут
 GButton screenBTN(SCREEN_PIN);
 unsigned long keyTrashhold; 
 
@@ -161,11 +161,14 @@ void SIMCommand(String s)
 // Отправляем данные через SIM
 void sendSIMData()
 {
+	String myString;
 	byte msg[4];
 	msg[0]=rideN_05;
 	msg[1]=rideN_07;
 	msg[2]=rideN_10;
 	msg[2]=0x1A;
+	
+	msgString = String((char*)msg);
 	
 	SIMCommand("AT+CPIN?");
 	SIMCommand("AT+CSQ");
@@ -187,7 +190,7 @@ void sendSIMData()
 	SIMCommand("AT+CIPQSEND?");
 	SIMCommand("AT+CIPSEND=4");
 	
-	SIMCommand(msg);
+	SIMCommand(msgString);
 	
 	SIMCommand("AT+CIPCLOSE");
 	
