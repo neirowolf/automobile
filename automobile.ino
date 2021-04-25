@@ -161,7 +161,7 @@ void SIMCommand(String s)
 // Отправляем данные через SIM
 void sendSIMData()
 {
-	String myString;
+	String msgString;
 	byte msg[4];
 	msg[0]=rideN_05;
 	msg[1]=rideN_07;
