@@ -156,7 +156,21 @@ void SIMCommand(String s)
 {
 	SIM800.print(s);
 	SIM800.print(13);
+	
+	Serial.println(ReadGSM());
 }
+
+String SIMAnswer() {  //функция чтения данных от GSM модуля
+  int c;
+  String v;
+  while (SIM800.available()) {  //сохраняем входную строку в переменную v
+    c = SIM800.read();
+    v += char(c);
+    delay(10);
+  }
+  return v;
+}
+
 
 // Отправляем данные через SIM
 void sendSIMData()
@@ -192,9 +206,7 @@ void sendSIMData()
 	
 	SIMCommand(msgString);
 	
-	SIMCommand("AT+CIPCLOSE");
-	
-	
+	SIMCommand("AT+CIPCLOSE");	
 }
 
 void saveRide()
