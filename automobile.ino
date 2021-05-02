@@ -157,7 +157,7 @@ void SIMCommand(String s)
 	SIM800.print(s);
 	SIM800.print(13);
 	
-	Serial.println(ReadGSM());
+	Serial.println(SIMAnswer());
 }
 
 String SIMAnswer() {  //функция чтения данных от GSM модуля
