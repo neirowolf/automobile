@@ -25,12 +25,12 @@ SoftwareSerial SIM800(SIM_RX, SIM_TX);
 TM1637 disp(CLK, DIO);
 
 int pinTouch = 8;		// времено неиспользется
-int pinTouchRele = 4;	// исходящий сигнал включается после выбора режима таймера
-int pinRide = 5;		//не используется
+int pinTouchRele = 6;	// исходящий сигнал включается после выбора режима таймера
+int pinRide = A3;		//не используется
 
 int keyPin=A1;			//переключение таймера  счетчиков 5-7-10 минут
 GButton keyBTN(TIMER_PIN);
-int keyPin1=A1;			//сингнал с кнопки чтения счетчиков 5-7-10 минут
+int keyPin1=A2;			//сингнал с кнопки чтения счетчиков 5-7-10 минут
 GButton screenBTN(SCREEN_PIN);
 unsigned long keyTrashhold; 
 
