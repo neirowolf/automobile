@@ -21,6 +21,12 @@ SoftwareSerial SIM800(SIM_RX, SIM_TX);
 #define TIMER_PIN 7 //переключение таймера  счетчиков 5-7-10 минут
 #define SCREEN_PIN 6 //сингнал с кнопки чтения счетчиков 5-7-10 минут
 
+struct ATCommand
+{
+	String command; // Команда
+	int delay;// задержка после команды
+};
+
 
 TM1637 disp(CLK, DIO);
 
@@ -112,7 +118,68 @@ void setup() {
 
  startPressing=endPressing=0;
  
+ gprs_init();
+ 
 }
+
+
+void gprs_init() {  //Процедура начальной инициализации GSM модуля
+  int d = 500;
+  int ATsCount = 8; // Количество команд
+  
+  ATCommand ATs[]=
+  {
+	   { "AT+SAPBR=0,1",3},//Закрыть соединение
+	  {"AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"", 6}, //Установка настроек подключения
+	  {"AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"", 6}, //Установка настроек подключения
+	  {"AT+SAPBR=3,1,\"APN\",\"internet.tele2.ru\"",1},
+	  {"AT+SAPBR=3,1,\"USER\",\"tele2\"",1},
+	  { "AT+SAPBR=3,1,\"PWD\",\"tele2\"",1},
+	  { "AT+SAPBR=1,1",3},//Устанавливаем GPRS соединение
+	  {"AT+HTTPINIT",3},//Инициализация http сервиса
+	  { "AT+HTTPPARA=\"CID\",1",1}//Установка CID параметра для http сессии
+  };
+  
+  Serial.println("GPRG init start");
+  for (int i = 0; i < ATsCount; i++) {
+    Serial.println(ATs[i]);  //посылаем в монитор порта
+    SIM800.println(ATs[i]);  //посылаем в GSM модуль
+    delay(d * ATsDelays[i]);
+    Serial.println(ReadGSM());  //показываем ответ от GSM модуля
+    delay(d);
+  }
+  Serial.println("GPRG init complete");
+}
+
+void gprs_send(String data) {  //Процедура отправки данных на сервер
+  //отправка данных на сайт
+  int d = 400;
+  Serial.println("Send start");
+  Serial.println("setup url");
+  SIM800.println("AT+HTTPPARA=\"URL\",\"http://mysite.ru/?a=" + data + "\"");
+  delay(d * 2);
+  Serial.println(ReadGSM());
+  delay(d);
+  Serial.println("GET url");
+  SIM800.println("AT+HTTPACTION=0");
+  delay(d * 2);
+  Serial.println(ReadGSM());
+  delay(d);
+  Serial.println("Send done");
+}
+
+String ReadGSM() {  //функция чтения данных от GSM модуля
+  int c;
+  String v;
+  while (SIM800.available()) {  //сохраняем входную строку в переменную v
+    c = SIM800.read();
+    v += char(c);
+    delay(10);
+  }
+  return v;
+}
+
+
 
 void loop()
 {
@@ -152,14 +219,6 @@ void loop()
 	}
 }
 
-void SIMCommand(String s)
-{
-	SIM800.print(s);
-	SIM800.print(13);
-	
-	Serial.println(SIMAnswer());
-}
-
 String SIMAnswer() {  //функция чтения данных от GSM модуля
   int c;
   String v;
@@ -184,29 +243,7 @@ void sendSIMData()
 	
 	msgString = String((char*)msg);
 	
-	SIMCommand("AT+CPIN?");
-	SIMCommand("AT+CSQ");
-	SIMCommand("AT+CREG?");
-	SIMCommand("AT+CGATT?");
-	SIMCommand("AT+CIPMODE=0");
-	SIMCommand("AT+CIPMUX=0");
-	
-	SIMCommand("AT+CSTT=\"internet\"");
-	SIMCommand("AT+CIPSTATUS");
-	SIMCommand("AT+CIICR");
-	SIMCommand("AT+CIPSTATUS");
-	SIMCommand("AT+CIFSR");
-	SIMCommand("AT+CIPSTATUS");
-	SIMCommand("AT+CIPSTART=\"TCP\",\"127.0.0.1\",80");
-	SIMCommand("AT+CIPSTATUS");
-	
-	SIMCommand("AT+CIPSEND?");
-	SIMCommand("AT+CIPQSEND?");
-	SIMCommand("AT+CIPSEND=4");
-	
-	SIMCommand(msgString);
-	
-	SIMCommand("AT+CIPCLOSE");	
+	gprs_send(msgString);
 }
 
 void saveRide()
