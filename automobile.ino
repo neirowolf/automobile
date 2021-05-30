@@ -144,7 +144,7 @@ void gprs_init() {  //Процедура начальной инициализа
   for (int i = 0; i < ATsCount; i++) {
     Serial.println(ATs[i].command);  //посылаем в монитор порта
     SIM800.println(ATs[i].command);  //посылаем в GSM модуль
-    delay(d * ATsDelays[i].delay);
+    delay(d * ATs[i].delay);
     Serial.println(ReadGSM());  //показываем ответ от GSM модуля
     delay(d);
   }
