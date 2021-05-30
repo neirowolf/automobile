@@ -8,8 +8,8 @@
 #define DIO A5
 
 #include <SoftwareSerial.h>
-#define SIM_RX D4
-#define SIM_TX D5
+#define SIM_RX 4
+#define SIM_TX 5
 
 SoftwareSerial SIM800(SIM_RX, SIM_TX);
 
@@ -142,9 +142,9 @@ void gprs_init() {  //Процедура начальной инициализа
   
   Serial.println("GPRG init start");
   for (int i = 0; i < ATsCount; i++) {
-    Serial.println(ATs[i]);  //посылаем в монитор порта
-    SIM800.println(ATs[i]);  //посылаем в GSM модуль
-    delay(d * ATsDelays[i]);
+    Serial.println(ATs[i].command);  //посылаем в монитор порта
+    SIM800.println(ATs[i].command);  //посылаем в GSM модуль
+    delay(d * ATsDelays[i].delay);
     Serial.println(ReadGSM());  //показываем ответ от GSM модуля
     delay(d);
   }
